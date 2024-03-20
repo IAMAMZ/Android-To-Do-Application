@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="@dimen/margin_medium"
+    android:gravity="center_vertical">
+
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+        android:id="@+id/todo_text"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/todo_text"
+        android:textSize="@dimen/CellTextSize" />
+        <TextView
+            android:id="@+id/todo_due_date"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14dp" />
+
+
+    </LinearLayout>
+
+
+    <Switch
+        android:id="@+id/todo_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

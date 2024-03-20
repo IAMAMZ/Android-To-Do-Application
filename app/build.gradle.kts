@@ -6,6 +6,11 @@ plugins {
 android {
     namespace = "ca.lakeheadu.mirantodoapp"
     compileSdk = 34
+    
+    buildFeatures {
+        viewBinding = true
+    }
+
 
     defaultConfig {
         applicationId = "ca.lakeheadu.mirantodoapp"

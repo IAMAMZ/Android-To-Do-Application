@@ -4,6 +4,7 @@ import java.time.LocalDate
 
 data class ToDoItem(
     val title:String,
-    val dueDate:LocalDate,
-    val isDone: Boolean
+    val isDone: Boolean,
+    val dueDate:LocalDate?=null,
+
 )

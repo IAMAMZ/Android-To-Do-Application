@@ -6,13 +6,40 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/ToDoTitle"
+        android:layout_height="0dp"
+        android:layout_width="200dp"
+        android:text="To Do Items"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/First_Recycler_View"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/First_Recycler_View"
+        android:layout_width="match_parent"
+        android:layout_height="602dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.53"
+        tools:listitem="@layout/to_do_row" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_toDo_FAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="60dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_add"
+        tools:ignore="SpeakableTextPresentCheck"
+        android:contentDescription="Add a Movie" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
