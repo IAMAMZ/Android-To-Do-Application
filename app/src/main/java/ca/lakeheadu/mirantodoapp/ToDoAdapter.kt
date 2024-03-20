@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ca.lakeheadu.mirantodoapp.databinding.ToDoRowBinding
 
-class ToDoAdapter(private val dataSet: Array<ToDoItem>) :
+class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicked: (ToDoItem) -> Unit) :
     RecyclerView.Adapter<ToDoAdapter.ViewHolder>()
 {
 
@@ -19,6 +19,10 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>) :
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+
+        viewHolder.itemView.setOnClickListener {
+            onItemClicked(dataSet[position])
+        }
         viewHolder.binding.todoText.text = dataSet[position].title
         val dueDate = dataSet[position].dueDate
         viewHolder.binding.todoSwitch.isChecked = dataSet[position].isDone;
