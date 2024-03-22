@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import ca.lakeheadu.mirantodoapp.databinding.ActivityToDoDetailsBinding
 import java.time.LocalDate
 import java.util.Date
-
 class ToDoDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityToDoDetailsBinding
 
@@ -13,13 +12,35 @@ class ToDoDetailsActivity : AppCompatActivity() {
         binding = ActivityToDoDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         val title = intent.getStringExtra("title")
         val isDone = intent.getBooleanExtra("isDone", false)
-        val dueDate = intent.getStringExtra("dueDate")
+        val dueDateMillis = intent.getLongExtra("dueDateMillis", -1L)
 
-        binding.titleEditText.setText(title);
-        binding.statusEditText.setText( if(isDone) "Completed" else "Not Completed")
+        binding.titleEditText.setText(title)
+        binding.statusEditText.setText(if (isDone) "Completed" else "Not Completed")
 
+        if (dueDateMillis != -1L) {
+            binding.calendarView.date = dueDateMillis
+        }
+
+        setupClickListeners()
+    }
+
+
+    private fun setupClickListeners() {
+        binding.btnCancel.setOnClickListener {
+
+            finish()
+        }
+
+        binding.btnDelete.setOnClickListener {
+            // delete logic here?
+            finish()
+        }
+
+        binding.btnSubmit.setOnClickListener {
+            // submit logic here?
+            finish()
+        }
     }
 }

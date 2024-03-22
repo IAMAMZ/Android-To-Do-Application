@@ -4,17 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#DEE4E7"
     tools:context=".MainActivity">
 
 
     <TextView
         android:id="@+id/ToDoTitle"
-        android:layout_height="0dp"
         android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="@font/roboto_bold"
         android:text="To Do Items"
-        android:textSize="24sp"
+        android:textSize="42sp"
         app:layout_constraintBottom_toTopOf="@+id/First_Recycler_View"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,11 +28,12 @@
         android:id="@+id/First_Recycler_View"
         android:layout_width="match_parent"
         android:layout_height="602dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.53"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/ToDoTitle"
+        app:layout_constraintStart_toStartOf="@+id/ToDoTitle"
+        app:layout_constraintTop_toBottomOf="@+id/ToDoTitle"
         tools:listitem="@layout/to_do_row" />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_toDo_FAB"

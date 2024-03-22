@@ -10,6 +10,7 @@ import ca.lakeheadu.mirantodoapp.databinding.ActivityMainBinding
 import java.time.LocalDate
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
+import java.time.ZoneId
 
 class MainActivity : AppCompatActivity() {
     // Declare an instance of the binding class
@@ -24,19 +25,28 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val toDos = arrayOf(
-            ToDoItem("Wash dishes", false, LocalDate.now()),
-            ToDoItem("Study",false),
-            ToDoItem("Exercise",false),
-            ToDoItem("anything",true),
-            ToDoItem("item3",false)
+            ToDoItem("Wash dishes", false, LocalDate.now().plusDays(3)),
+            ToDoItem("Study", true, LocalDate.now().plusDays(21)),
+            ToDoItem("Exercise", false, LocalDate.now().plusDays(18)),
+            ToDoItem("Call family", true, LocalDate.now().plusDays(3)),
+            ToDoItem("Grocery shopping", false, LocalDate.now().plusDays(4)),
+            ToDoItem("Read a book", false, LocalDate.now().plusDays(19)),
+            ToDoItem("Fill your taxes", true, LocalDate.now().plusDays(22)),
+            ToDoItem("Complete project", true, LocalDate.now().plusDays(22)),
+            ToDoItem("Clean the house", false, LocalDate.now().plusDays(23)),
+            ToDoItem("Plan vacation", false, LocalDate.now().plusDays(13))
         )
+
 
         toDoViewModel.navigateToDetails.observe(this, Observer { toDoItem ->
             toDoItem?.let {
                 val intent = Intent(this, ToDoDetailsActivity::class.java).apply {
                     putExtra("title", it.title)
                     putExtra("isDone", it.isDone)
-                    it.dueDate?.let { date -> putExtra("dueDate", date.toString()) } // maybe pass it as date idk
+                    it.dueDate?.let { date ->
+                        val millis = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                        putExtra("dueDateMillis", millis)
+                    }
                 }
                 startActivity(intent)
                 toDoViewModel.onToDoDetailsNavigated()
