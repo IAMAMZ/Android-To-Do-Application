@@ -26,14 +26,14 @@ class MainActivity : AppCompatActivity() {
 
         val toDos = arrayOf(
             ToDoItem("Wash dishes", false, LocalDate.now().plusDays(3)),
-            ToDoItem("Study", true, LocalDate.now().plusDays(21)),
+            ToDoItem("Study", true),
             ToDoItem("Exercise", false, LocalDate.now().plusDays(18)),
             ToDoItem("Call family", true, LocalDate.now().plusDays(3)),
             ToDoItem("Grocery shopping", false, LocalDate.now().plusDays(4)),
             ToDoItem("Read a book", false, LocalDate.now().plusDays(19)),
             ToDoItem("Fill your taxes", true, LocalDate.now().plusDays(12)),
             ToDoItem("Complete project", true, LocalDate.now().plusDays(14)),
-            ToDoItem("Clean the house", false, LocalDate.now().plusDays(23)),
+            ToDoItem("Clean the house", false),
             ToDoItem("Plan vacation", false, LocalDate.now().minusDays(13))
         )
 
