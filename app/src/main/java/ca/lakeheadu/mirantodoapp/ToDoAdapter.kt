@@ -40,7 +40,7 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicke
             viewHolder.binding.todoDueDate.setTextColor(
                 when {
                     daysUntilDue < 0 -> Color.parseColor("#7f0205") // Overdue
-                    daysUntilDue <= 7 -> Color.parseColor("#FF5722")// Due within a week
+                    daysUntilDue <= 7 -> Color.parseColor("#FF5722")// Due within a week darker orange
                     else -> Color.parseColor("#689F38")// More than a week away
                 }
             )

@@ -26,16 +26,17 @@ class MainActivity : AppCompatActivity() {
 
         val toDos = arrayOf(
             ToDoItem("Wash dishes", false, LocalDate.now().plusDays(3)),
-            ToDoItem("Study", true),
-            ToDoItem("Exercise", false, LocalDate.now().plusDays(18)),
-            ToDoItem("Call family", true, LocalDate.now().plusDays(3)),
-            ToDoItem("Grocery shopping", false, LocalDate.now().plusDays(4)),
-            ToDoItem("Read a book", false, LocalDate.now().plusDays(19)),
-            ToDoItem("Fill your taxes", true, LocalDate.now().plusDays(12)),
-            ToDoItem("Complete project", true, LocalDate.now().plusDays(14)),
-            ToDoItem("Clean the house", false),
-            ToDoItem("Plan vacation", false, LocalDate.now().minusDays(13))
+            ToDoItem("Study", true, notes="Review notes on Java and Kotlin"),
+            ToDoItem("Exercise", false, LocalDate.now().plusDays(18), "Focus on cardio and strength"),
+            ToDoItem("Call family", true, LocalDate.now().plusDays(3), "Remember to ask about the trip"),
+            ToDoItem("Grocery shopping", false, LocalDate.now().plusDays(4), "Don't forget the list"),
+            ToDoItem("Read a book", false, notes="Start with Atomic Habits"),
+            ToDoItem("Fill your taxes", true, LocalDate.now().plusDays(12), "Gather all documents beforehand"),
+            ToDoItem("Complete project", true, LocalDate.now().plusDays(14), "Final review with the team"),
+            ToDoItem("Clean the house", false, notes="Start with the kitchen and living room"),
+            ToDoItem("Plan vacation", false, LocalDate.now().minusDays(13), "Check travel restrictions")
         )
+
 
 
         toDoViewModel.navigateToDetails.observe(this, Observer { toDoItem ->
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, ToDoDetailsActivity::class.java).apply {
                     putExtra("title", it.title)
                     putExtra("isDone", it.isDone)
+                    putExtra("notes",it.notes)
                     it.dueDate?.let { date ->
                         val millis = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
                         putExtra("dueDateMillis", millis)

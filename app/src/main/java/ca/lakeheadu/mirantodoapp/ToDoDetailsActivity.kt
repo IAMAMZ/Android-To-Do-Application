@@ -19,6 +19,7 @@ class ToDoDetailsActivity : AppCompatActivity() {
 
         binding.titleEditText.setText(title)
         binding.statusEditText.setText(if (isDone) "Completed" else "Not Completed")
+        binding.notesEditText.setText(intent.getStringExtra("notes"));
 
         if (dueDateMillis != -1L) {
             binding.calendarView.date = dueDateMillis
