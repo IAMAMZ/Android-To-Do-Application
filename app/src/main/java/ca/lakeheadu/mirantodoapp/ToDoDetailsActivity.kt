@@ -1,10 +1,11 @@
 package ca.lakeheadu.mirantodoapp
+import android.graphics.Paint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ca.lakeheadu.mirantodoapp.databinding.ActivityToDoDetailsBinding
-import java.time.LocalDate
 import java.util.Calendar
-import java.util.Date
+
+
 class ToDoDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityToDoDetailsBinding
 
@@ -19,6 +20,7 @@ class ToDoDetailsActivity : AppCompatActivity() {
 
         binding.titleEditText.setText(title)
         binding.statusEditText.setText(if (isDone) "Completed" else "Not Completed")
+
         binding.notesEditText.setText(intent.getStringExtra("notes"));
 
         if (dueDateMillis != -1L) {
