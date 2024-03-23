@@ -22,16 +22,20 @@ class ToDoDetailsActivity : AppCompatActivity() {
         binding.statusEditText.setText(if (isDone) "Completed" else "Not Completed")
 
         binding.notesEditText.setText(intent.getStringExtra("notes"));
-
+        val today = Calendar.getInstance().timeInMillis
         if (dueDateMillis != -1L) {
             binding.calendarView.date = dueDateMillis
             // can't set up a to do for the past
-                val today = Calendar.getInstance().timeInMillis
+
             // only if the due date in the future if it's in the past then you can reset to past
                 if(dueDateMillis>today){
                     binding.calendarView.minDate = today
                 }
             }
+        else{
+            // if due date not set still limit
+            binding.calendarView.minDate = today
+        }
 
         setupClickListeners()
     }
