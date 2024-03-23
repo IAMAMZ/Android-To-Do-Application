@@ -3,6 +3,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ca.lakeheadu.mirantodoapp.databinding.ActivityToDoDetailsBinding
 import java.time.LocalDate
+import java.util.Calendar
 import java.util.Date
 class ToDoDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityToDoDetailsBinding
@@ -21,6 +22,9 @@ class ToDoDetailsActivity : AppCompatActivity() {
 
         if (dueDateMillis != -1L) {
             binding.calendarView.date = dueDateMillis
+            // can't set up a to do for the past
+            val today = Calendar.getInstance().timeInMillis
+            binding.calendarView.minDate = today
         }
 
         setupClickListeners()
