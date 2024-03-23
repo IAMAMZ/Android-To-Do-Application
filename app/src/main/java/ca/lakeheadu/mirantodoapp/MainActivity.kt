@@ -31,10 +31,10 @@ class MainActivity : AppCompatActivity() {
             ToDoItem("Call family", true, LocalDate.now().plusDays(3)),
             ToDoItem("Grocery shopping", false, LocalDate.now().plusDays(4)),
             ToDoItem("Read a book", false, LocalDate.now().plusDays(19)),
-            ToDoItem("Fill your taxes", true, LocalDate.now().plusDays(22)),
-            ToDoItem("Complete project", true, LocalDate.now().plusDays(22)),
+            ToDoItem("Fill your taxes", true, LocalDate.now().plusDays(12)),
+            ToDoItem("Complete project", true, LocalDate.now().plusDays(14)),
             ToDoItem("Clean the house", false, LocalDate.now().plusDays(23)),
-            ToDoItem("Plan vacation", false, LocalDate.now().plusDays(13))
+            ToDoItem("Plan vacation", false, LocalDate.now().minusDays(13))
         )
 
 
