@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="@dimen/margin_medium"
-    android:gravity="center_vertical">
+    android:padding="@dimen/margin_medium">
 
 
     <LinearLayout
@@ -17,24 +17,31 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textFontWeight="700"
+            android:fontFamily="@font/roboto_bold"
             android:text="@string/todo_text"
-            android:textSize="@dimen/CellTextSize" />
+            android:textFontWeight="700"
+            android:textSize="32sp" />
 
         <TextView
             android:id="@+id/todo_due_date"
             android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:fontFamily="@font/roboto_bold"
             android:textColor="#7f0205"
-            android:textSize="14dp" />
+            android:textSize="16dp" />
 
 
     </LinearLayout>
 
     <CheckBox
         android:id="@+id/todo_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:backgroundTint="@color/black"
+        android:backgroundTintMode="multiply"
+        android:scaleX="1.70"
+        android:scaleY="1.70"
+        android:textSize="34sp" />
 
 </LinearLayout>
