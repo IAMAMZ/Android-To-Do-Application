@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import ca.lakeheadu.mirantodoapp.databinding.ToDoRowBinding
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicked: (ToDoItem) -> Unit) :
@@ -46,7 +47,7 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicke
 
 
         item.dueDate?.let { dueDate ->
-            viewHolder.binding.todoDueDate.text = dueDate.toString();
+            viewHolder.binding.todoDueDate.text = dueDate.format(DateTimeFormatter.ofPattern("E MMM dd")) //src: https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
             val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
             viewHolder.binding.todoDueDate.setTextColor(
                 when {
