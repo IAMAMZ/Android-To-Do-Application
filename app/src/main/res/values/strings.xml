@@ -3,4 +3,9 @@
     <string name="title_text">Item Title</string>
     <string name="subtitle_text">Due Date</string>
     <string name="todo_text">"To Do "</string>
+    <string name="press_to_change_title">(press to change title)</string>
+    <string name="save_btn_text">Save</string>
+    <string name="delete_btn_text">Delete</string>
+    <string name="due_date_textView_text">Due Date:</string>
+    <string name="cancel_btn_text">Cancel</string>
 </resources>
