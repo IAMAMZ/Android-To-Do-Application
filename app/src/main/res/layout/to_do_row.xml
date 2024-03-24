@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="@font/roboto_bold"
-            android:textColor="#7f0205"
+            android:textColor="@color/Default_Due_Date"
             android:textSize="16dp" />
 
 

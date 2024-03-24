@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DEE4E7"
+    android:background="@color/app_background"
     tools:context=".MainActivity">
 
 
@@ -45,7 +45,7 @@
         android:clickable="true"
         android:contentDescription="Add a To Do"
         android:focusable="true"
-        app:backgroundTint="@color/accent_green"
+        app:backgroundTint="@color/app_green_background"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
