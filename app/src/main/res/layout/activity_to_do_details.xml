@@ -34,8 +34,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnCancel" />
 
-    <EditText
-        android:id="@+id/statusEditText"
+    <TextView
+        android:id="@+id/statusTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -55,9 +55,9 @@
         android:layout_marginTop="16dp"
         android:text="Due Date:"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintTop_toBottomOf="@+id/statusEditText"
-        app:layout_constraintStart_toStartOf="@+id/statusEditText"
-        app:layout_constraintEnd_toEndOf="@+id/statusEditText"/>
+        app:layout_constraintTop_toBottomOf="@+id/statusTextView"
+        app:layout_constraintStart_toStartOf="@+id/statusTextView"
+        app:layout_constraintEnd_toEndOf="@+id/statusTextView"/>
 
 
     <CalendarView
@@ -92,24 +92,33 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="24dp"
         android:text="Delete"
-        android:textSize="24sp"
+        android:textSize="26dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnSubmit"
+        app:layout_constraintStart_toEndOf="@+id/btnSave"
         app:layout_constraintTop_toBottomOf="@+id/notesEditText" />
 
     <Button
-        android:id="@+id/btnSubmit"
+        android:id="@+id/btnSave"
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
-        android:text="Submit"
-        android:textSize="24sp"
+        android:text="Save"
+        android:textSize="26sp"
         app:layout_constraintEnd_toStartOf="@+id/btnDelete"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/notesEditText" />
 
+    <TextView
+        android:id="@+id/userPromptTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="8dp"
+        android:text="(press to change title)"
+        app:layout_constraintBottom_toTopOf="@+id/titleEditText"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

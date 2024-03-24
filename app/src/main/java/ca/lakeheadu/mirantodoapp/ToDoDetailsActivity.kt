@@ -19,7 +19,7 @@ class ToDoDetailsActivity : AppCompatActivity() {
         val dueDateMillis = intent.getLongExtra("dueDateMillis", -1L)
 
         binding.titleEditText.setText(title)
-        binding.statusEditText.setText(if (isDone) "Completed" else "Not Completed")
+        binding.statusTextView.setText(if (isDone) "Completed" else "Not Completed")
 
         binding.notesEditText.setText(intent.getStringExtra("notes"));
         val today = Calendar.getInstance().timeInMillis
@@ -52,7 +52,7 @@ class ToDoDetailsActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.btnSubmit.setOnClickListener {
+        binding.btnSave.setOnClickListener {
             // submit logic here?
             finish()
         }
