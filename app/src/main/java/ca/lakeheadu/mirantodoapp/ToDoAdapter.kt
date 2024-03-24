@@ -13,6 +13,15 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+
+/**
+ * This class converts a to do item data class to a recyclerview of view holder items.
+
+
+ * it has a view holder inner lass that inherits form the view holder constructor
+ *  * @param dataSet Array of to-do items to be displayed.
+ *  * @param onItemClicked Function to be called when a to-do item is clicked.
+ */
 class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicked: (ToDoItem) -> Unit) :
     RecyclerView.Adapter<ToDoAdapter.ViewHolder>()
 {
@@ -25,6 +34,16 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicke
         val binding = ToDoRowBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
         return ViewHolder(binding)
     }
+
+    /**
+     * Binds data from the dataSet to the views in the ViewHolder.
+     * Sets up the to-do item's title, completion status, and due date.
+     * Adds click listeners and updates the UI based on item state.
+     *
+     *
+     * @param viewHolder The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
@@ -61,7 +80,10 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicke
         };
     }
 
-    /**
+    /**Applies or removes a strike-through effect on the to-do item's title based on its completion status.
+     *
+     *  @param textView The TextView displaying the to-do item's title.
+     *  @param isDone Whether the to-do item is marked as completed.
      * src:https://stackoverflow.com/questions/9786544/creating-a-strikethrough-text
      */
     private fun applyStrikeThrough(textView: TextView, isDone: Boolean) {
@@ -71,6 +93,7 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicke
             textView.paintFlags = textView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv();
         }
     }
+
 
     override fun getItemCount() = dataSet.size
 }

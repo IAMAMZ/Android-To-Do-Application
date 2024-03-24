@@ -6,6 +6,12 @@ import ca.lakeheadu.mirantodoapp.databinding.ActivityToDoDetailsBinding
 import java.util.Calendar
 
 
+
+/**
+ * Activity for displaying and editing the details of a to-do item.
+ * Allows users to view details, change due date and edit notes.
+ */
+
 class ToDoDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityToDoDetailsBinding
 
@@ -14,10 +20,14 @@ class ToDoDetailsActivity : AppCompatActivity() {
         binding = ActivityToDoDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Extract data from the intent that started this activity
         val title = intent.getStringExtra("title")
         val isDone = intent.getBooleanExtra("isDone", false)
         val dueDateMillis = intent.getLongExtra("dueDateMillis", -1L)
 
+
+
+        // Populate the views with the data extracted from the intent.
         binding.titleEditText.setText(title)
         binding.statusTextView.setText(if (isDone) "Completed" else "Not Completed")
 
@@ -41,19 +51,24 @@ class ToDoDetailsActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Setup click listeners for the save, cancel, and delete buttons.
+     */
     private fun setupClickListeners() {
         binding.btnCancel.setOnClickListener {
-
+            // Close the activity without saving when cancel is clicked.
             finish()
         }
 
         binding.btnDelete.setOnClickListener {
-            // delete logic here?
+            // Implement delete logic here. Currently, just closes the activity.
             finish()
         }
 
         binding.btnSave.setOnClickListener {
-            // submit logic here?
+
+           // Save the to-do item changes when save is clicked. Currently, just closes the activity.inish()
+
             finish()
         }
     }
