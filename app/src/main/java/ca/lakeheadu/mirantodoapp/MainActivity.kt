@@ -15,6 +15,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.lakeheadu.mirantodoapp.databinding.ActivityMainBinding
@@ -34,6 +35,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding;
 
     private lateinit var addNewToDoBinding :AddNewTodoItemBinding;
+
+    private lateinit var toDoAdapter: ToDoAdapter
+
 
     // get the view model as a instance member
     private val toDoViewModel: ToDoViewModel by viewModels()
@@ -65,20 +69,13 @@ class MainActivity : AppCompatActivity() {
 
         }
         }
+        // Initialize the RecyclerView and its adapter here
+        initializeRecyclerView()
+
+        // Load to-do items from Firestore
+        loadToDosFromFirestore()
 
 
-     /*   val toDos = arrayOf(
-            ToDoItem("Wash dishes", false, LocalDate.now().plusDays(3)),
-            ToDoItem("Study", true, notes="Review notes on Java and Kotlin"),
-            ToDoItem("Exercise", false, LocalDate.now().plusDays(18), "Focus on cardio and strength"),
-            ToDoItem("Call family", true, LocalDate.now().plusDays(3), "Remember to ask about the trip"),
-            ToDoItem("Grocery shopping", false, LocalDate.now().plusDays(4), "Don't forget the list"),
-            ToDoItem("Read a book", false, notes="Start with Atomic Habits"),
-            ToDoItem("Fill your taxes", true, LocalDate.now().plusDays(12), "Gather all documents beforehand"),
-            ToDoItem("Complete project", true, LocalDate.now().plusDays(14), "Final review with the team"),
-            ToDoItem("Clean the house", false, notes="Start with the kitchen and living room"),
-            ToDoItem("Plan vacation", false, LocalDate.now().minusDays(13), "Check travel restrictions")
-        )*/
 
 
         // call the observe method of the live data of the navigate to data
@@ -88,9 +85,9 @@ class MainActivity : AppCompatActivity() {
                     putExtra("title", it.title)
                     putExtra("isDone", it.isDone)
                     putExtra("notes",it.notes)
-                    it.dueDate?.let { date ->
+                    it.dueDate?.let { timestamp  ->
 
-                        putExtra("dueDateMillis", date)
+                        putExtra("dueDateMillis", timestamp.toDate().time)
                     }
                 }
 
@@ -100,10 +97,7 @@ class MainActivity : AppCompatActivity() {
         })
 
 
-        // pass the to do items to the to do adapter  and call the callback to pass the data to the view model
-//        val toDoAdapter = ToDoAdapter(toDos) {
-//            toDoViewModel.onToDoClicked(it)
-//        }
+
 
 
         val addToDoFABBtn = binding.addToDoFAB;
@@ -113,14 +107,9 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        //pass the adapter to the recycle view and send the context
-//        binding.FirstRecyclerView.apply {
-//            layoutManager = LinearLayoutManager(context)
-//            adapter = toDoAdapter
-//        }
+
     }
-    private fun showToDoModal()
-    {
+    private fun showToDoModal() {
         val dialogTitle = getString(R.string.add_dialog_title)
         val positiveButtonTitle = getString(R.string.add_todo)
         val builder = AlertDialog.Builder(this)
@@ -130,12 +119,53 @@ class MainActivity : AppCompatActivity() {
         builder.setView(addNewToDoBinding.root)
 
         builder.setPositiveButton(positiveButtonTitle) { dialog, _ ->
+            val toDoTitle = addNewToDoBinding.toDoTitleEditText.text.toString()
+            if (toDoTitle.isNotEmpty()) {
+                val newToDoItem = ToDoItem(title = toDoTitle, isDone = false)
+                saveToDoItem(newToDoItem)
+            }
             dialog.dismiss()
-            val movieTitle = addNewToDoBinding.movieTitleEditText.text.toString()
-            //val newMovie = Movie(title = movieTitle, studio = studioTitle)
-
-            //viewModel.addMovie(newMovie)
         }
         builder.create().show()
     }
+
+    private fun initializeRecyclerView() {
+        toDoAdapter = ToDoAdapter(arrayOf()) {
+            toDoViewModel.onToDoClicked(it)
+        }
+
+        binding.FirstRecyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = toDoAdapter
+        }
+    }
+    private fun updateRecyclerView(toDoItems: Array<ToDoItem>) {
+        toDoAdapter = ToDoAdapter(toDoItems) {
+            toDoViewModel.onToDoClicked(it)
+        }
+        binding.FirstRecyclerView.adapter = toDoAdapter
+    }
+
+
+    private fun loadToDosFromFirestore() {
+        val firestore = FireStoreDataManager()
+        firestore.getToDos { todos ->
+
+            updateRecyclerView(todos.toTypedArray())
+        }
+    }
+    private fun saveToDoItem(toDoItem: ToDoItem) {
+        val firestore = FireStoreDataManager()
+        firestore.saveToDo(toDoItem) { success ->
+            if (success) {
+                Toast.makeText(this, "To-Do added successfully", Toast.LENGTH_SHORT).show()
+                loadToDosFromFirestore() // Reload the to-do list from Firestore to show the new item
+            } else {
+                Toast.makeText(this, "Failed to add To-Do", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+
 }

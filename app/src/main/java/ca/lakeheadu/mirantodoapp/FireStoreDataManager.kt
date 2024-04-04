@@ -22,4 +22,14 @@ class FireStoreDataManager {
             }
 
     }
+    fun saveToDo(toDoItem: ToDoItem, onComplete: (Boolean) -> Unit) {
+        collectionRef.add(toDoItem)
+            .addOnSuccessListener {
+                onComplete(true)
+            }
+            .addOnFailureListener {
+                onComplete(false)
+            }
+    }
+
 }

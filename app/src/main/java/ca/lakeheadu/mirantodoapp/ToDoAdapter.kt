@@ -55,16 +55,15 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicke
         viewHolder.itemView.setOnClickListener {
             onItemClicked(item);
         };
-        viewHolder.binding.todoText.text = item.title;
-        viewHolder.binding.todoSwitch.isChecked = item.isDone!!;
-
-        //initial strike through upon loading
-        applyStrikeThrough(viewHolder.binding.todoText, item.isDone!!);
+        viewHolder.binding.todoText.text = item.title ?: "No Title" // Default title if null
+        val isDone = item.isDone ?: false // Default to false if null
+        viewHolder.binding.todoSwitch.isChecked = isDone
+        applyStrikeThrough(viewHolder.binding.todoText, isDone)
 
         // then listen for changes
         viewHolder.binding.todoSwitch.setOnCheckedChangeListener { _, isChecked ->
             item.isDone = isChecked;
-            // TODO: for assignment 4 update persistent data here
+
             applyStrikeThrough(viewHolder.binding.todoText, isChecked);
         };
 
