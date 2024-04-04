@@ -9,9 +9,13 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import ca.lakeheadu.mirantodoapp.databinding.ToDoRowBinding
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import com.google.firebase.Timestamp
+
 
 
 /**
@@ -52,10 +56,10 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicke
             onItemClicked(item);
         };
         viewHolder.binding.todoText.text = item.title;
-        viewHolder.binding.todoSwitch.isChecked = item.isDone;
+        viewHolder.binding.todoSwitch.isChecked = item.isDone!!;
 
         //initial strike through upon loading
-        applyStrikeThrough(viewHolder.binding.todoText, item.isDone);
+        applyStrikeThrough(viewHolder.binding.todoText, item.isDone!!);
 
         // then listen for changes
         viewHolder.binding.todoSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -65,19 +69,23 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicke
         };
 
 
-        item.dueDate?.let { dueDate ->
-            viewHolder.binding.todoDueDate.text = dueDate.format(DateTimeFormatter.ofPattern("E MMM dd")) //src: https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
-            val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
+        item.dueDate?.let { timestamp ->
+            // Convert Firebase Timestamp to java.util.Date, then to java.time.Instant
+            val instant = timestamp.toDate().toInstant()
+            val dueDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
+            viewHolder.binding.todoDueDate.text = dueDate.format(DateTimeFormatter.ofPattern("E MMM dd"))
+            val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), dueDate)
             viewHolder.binding.todoDueDate.setTextColor(
                 when {
-                    daysUntilDue < 0 -> Color.parseColor("#7f0205"); // Overdue
-                    daysUntilDue <= 7 -> Color.parseColor("#FF5722"); // Due within a week
-                    else -> Color.parseColor("#689F38"); // More than a week away
+                    daysUntilDue < 0 -> Color.parseColor("#7f0205") // Overdue
+                    daysUntilDue <= 7 -> Color.parseColor("#FF5722") // Due within a week
+                    else -> Color.parseColor("#689F38") // More than a week away
                 }
-            );
+            )
         } ?: run {
-            viewHolder.binding.todoDueDate.visibility = View.GONE;
-        };
+            viewHolder.binding.todoDueDate.visibility = View.GONE
+        }
+
     }
 
     /**Applies or removes a strike-through effect on the to-do item's title based on its completion status.

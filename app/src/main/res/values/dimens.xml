@@ -4,4 +4,6 @@
     <dimen name="margin_medium">10dp</dimen>
     <dimen name="CellMargin">5dp</dimen>
     <dimen name="CellTextSize">24sp</dimen>
+    <dimen name="cell_text_size">24dp</dimen>
+    <dimen name="dialog_height">80dp</dimen>
 </resources>

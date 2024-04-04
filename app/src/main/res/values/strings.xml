@@ -8,4 +8,7 @@
     <string name="delete_btn_text">Delete</string>
     <string name="due_date_textView_text">Due Date:</string>
     <string name="cancel_btn_text">Cancel</string>
+    <string name="title_prompt">To Do Title:</string>
+    <string name="add_dialog_title">Add a task</string>
+    <string name="add_todo">Add a new task\n</string>
 </resources>

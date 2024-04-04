@@ -10,6 +10,7 @@
  */
 
 package ca.lakeheadu.mirantodoapp
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,8 @@ import ca.lakeheadu.mirantodoapp.databinding.ActivityMainBinding
 import java.time.LocalDate
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
+import ca.lakeheadu.mirantodoapp.databinding.AddNewTodoItemBinding
+import com.google.firebase.FirebaseApp
 import java.time.ZoneId
 
 
@@ -29,6 +32,8 @@ import java.time.ZoneId
 class MainActivity : AppCompatActivity() {
     // Declare an instance of the binding class
     private lateinit var binding: ActivityMainBinding;
+
+    private lateinit var addNewToDoBinding :AddNewTodoItemBinding;
 
     // get the view model as a instance member
     private val toDoViewModel: ToDoViewModel by viewModels()
@@ -48,7 +53,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val toDos = arrayOf(
+        FirebaseApp.initializeApp(this);
+
+        val firestore = FireStoreDataManager();
+        firestore.getToDos {
+            todos->
+
+                for(todo in todos){
+                    println(todo.title);
+
+
+        }
+        }
+
+
+     /*   val toDos = arrayOf(
             ToDoItem("Wash dishes", false, LocalDate.now().plusDays(3)),
             ToDoItem("Study", true, notes="Review notes on Java and Kotlin"),
             ToDoItem("Exercise", false, LocalDate.now().plusDays(18), "Focus on cardio and strength"),
@@ -59,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             ToDoItem("Complete project", true, LocalDate.now().plusDays(14), "Final review with the team"),
             ToDoItem("Clean the house", false, notes="Start with the kitchen and living room"),
             ToDoItem("Plan vacation", false, LocalDate.now().minusDays(13), "Check travel restrictions")
-        )
+        )*/
 
 
         // call the observe method of the live data of the navigate to data
@@ -70,8 +89,8 @@ class MainActivity : AppCompatActivity() {
                     putExtra("isDone", it.isDone)
                     putExtra("notes",it.notes)
                     it.dueDate?.let { date ->
-                        val millis = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                        putExtra("dueDateMillis", millis)
+
+                        putExtra("dueDateMillis", date)
                     }
                 }
 
@@ -82,15 +101,41 @@ class MainActivity : AppCompatActivity() {
 
 
         // pass the to do items to the to do adapter  and call the callback to pass the data to the view model
-        val toDoAdapter = ToDoAdapter(toDos) {
-            toDoViewModel.onToDoClicked(it)
-        }
+//        val toDoAdapter = ToDoAdapter(toDos) {
+//            toDoViewModel.onToDoClicked(it)
+//        }
+
+
+        val addToDoFABBtn = binding.addToDoFAB;
+
+        addToDoFABBtn.setOnClickListener{ showToDoModal() }
+
+
 
 
         //pass the adapter to the recycle view and send the context
-        binding.FirstRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = toDoAdapter
+//        binding.FirstRecyclerView.apply {
+//            layoutManager = LinearLayoutManager(context)
+//            adapter = toDoAdapter
+//        }
+    }
+    private fun showToDoModal()
+    {
+        val dialogTitle = getString(R.string.add_dialog_title)
+        val positiveButtonTitle = getString(R.string.add_todo)
+        val builder = AlertDialog.Builder(this)
+        addNewToDoBinding = AddNewTodoItemBinding.inflate(layoutInflater)
+
+        builder.setTitle(dialogTitle)
+        builder.setView(addNewToDoBinding.root)
+
+        builder.setPositiveButton(positiveButtonTitle) { dialog, _ ->
+            dialog.dismiss()
+            val movieTitle = addNewToDoBinding.movieTitleEditText.text.toString()
+            //val newMovie = Movie(title = movieTitle, studio = studioTitle)
+
+            //viewModel.addMovie(newMovie)
         }
+        builder.create().show()
     }
 }
