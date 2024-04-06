@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import ca.lakeheadu.mirantodoapp.databinding.ToDoRowBinding
@@ -65,6 +66,16 @@ class ToDoAdapter(var dataSet: Array<ToDoItem>, private val onItemClicked: (ToDo
             item.isDone = isChecked;
 
             applyStrikeThrough(viewHolder.binding.todoText, isChecked);
+
+            // Update in Firestore
+            item.id?.let { toDoId ->
+                val firestore = FireStoreDataManager()
+                firestore.updateToDoIsDone(toDoId, isChecked) { success ->
+                    if (!success) {
+                        Toast.makeText(viewHolder.itemView.context, "Opps something went wrong", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         };
 
 

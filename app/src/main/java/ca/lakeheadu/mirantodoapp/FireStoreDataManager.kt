@@ -45,6 +45,33 @@ class FireStoreDataManager {
             }
     }
 
+    fun updateToDoIsDone(toDoId: String, isDone: Boolean, callback: (Boolean) -> Unit) {
+        val documentRef = collectionRef.document(toDoId)
 
+        Log.d("FireStoreDataManager", "Updating isDone for document: $toDoId")
 
-}
+        documentRef.get().addOnSuccessListener { documentSnapshot ->
+            if (documentSnapshot.exists()) {
+                Log.d("FireStoreDataManager", "Document exists, updating isDone...")
+
+                documentRef.update("isDone", isDone)
+                    .addOnSuccessListener {
+                        Log.d("FireStoreDataManager", "Document updated successfully")
+                        callback(true)
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("FireStoreDataManager", "Error updating document", exception)
+                        callback(false)
+                    }
+            } else {
+                Log.w("FireStoreDataManager", "Document does not exist: $toDoId")
+                callback(false)
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("FireStoreDataManager", "Error getting document", exception)
+            callback(false)
+        }
+    }
+
+    }
+
