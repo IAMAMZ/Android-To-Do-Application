@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     // get the view model as a instance member
     private val toDoViewModel: ToDoViewModel by viewModels()
+    private lateinit var toDoItemsList :MutableList<ToDoItem>
 
 
     /**
@@ -61,11 +62,22 @@ class MainActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this);
 
 
-        // Initialize the RecyclerView and its adapter here
-        initializeRecyclerView()
+
 
         // Load to-do items from Firestore
-        loadToDosFromFirestore()
+        toDoViewModel.toDos.observe(this){ toDoItems->
+            toDoItemsList = toDoItems.toMutableList()
+            toDoAdapter = ToDoAdapter(toDoItems){ toDoViewModel.onToDoClicked(it)}
+
+            binding.FirstRecyclerView.apply {
+                layoutManager = LinearLayoutManager(this@MainActivity)
+                adapter = toDoAdapter
+            }
+
+
+        }
+        toDoViewModel.getAllToDos()
+        //loadToDosFromFirestore()
 
 
 
@@ -77,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 val updatedDataSet = toDoAdapter.dataSet.map { toDoItem ->
                     if (toDoItem.id == updatedToDoItem.id) updatedToDoItem else toDoItem
                 }.toTypedArray()
-                toDoAdapter.updateDataSet(updatedDataSet)
+                //toDoAdapter.updateDataSet(updatedDataSet)
             }
         })
 
@@ -133,7 +145,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeRecyclerView() {
-        toDoAdapter = ToDoAdapter(arrayOf()) {
+        toDoAdapter = ToDoAdapter(toDoItemsList) {
             toDoViewModel.onToDoClicked(it)
         }
 
@@ -143,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun updateRecyclerView(toDoItems: Array<ToDoItem>) {
-        toDoAdapter = ToDoAdapter(toDoItems) {
+        toDoAdapter = ToDoAdapter(toDoItemsList) {
             toDoViewModel.onToDoClicked(it)
         }
         binding.FirstRecyclerView.adapter = toDoAdapter
@@ -153,7 +165,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadToDosFromFirestore() {
         val firestore = FireStoreDataManager()
         firestore.getToDos { todos ->
-            toDoAdapter.updateDataSet(todos.toTypedArray())
+            toDoAdapter.updateDataSet(todos)
         }
     }
     private fun saveToDoItem(toDoItem: ToDoItem) {
@@ -192,7 +204,7 @@ class MainActivity : AppCompatActivity() {
                                 Toast.makeText(this@MainActivity, "Item deleted successfully", Toast.LENGTH_SHORT).show()
                                 // Remove the item from the adapter data
                                 val updatedDataSet = toDoAdapter.dataSet.filterNot { it.id == toDoId }.toTypedArray()
-                                toDoAdapter.updateDataSet(updatedDataSet)
+                                //toDoAdapter.updateDataSet(updatedDataSet)
                             } else {
                                 Toast.makeText(this@MainActivity, "Failed to delete item", Toast.LENGTH_SHORT).show()
                             }

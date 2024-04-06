@@ -15,11 +15,23 @@ import androidx.lifecycle.MutableLiveData
 class ToDoViewModel(application: Application) : AndroidViewModel(application) {
 
     // A private mutable LiveData that holds the details of the to-do item to navigate to.
+    private val toDoList = MutableLiveData<List<ToDoItem>>()
+    val toDos :LiveData<List<ToDoItem>> = toDoList
+
+    val firestore = FireStoreDataManager()
+
     private val _navigateToDetails = MutableLiveData<ToDoItem?>()
     private val _updatedToDoItem = MutableLiveData<ToDoItem>()
     val updatedToDoItem: LiveData<ToDoItem>
         get() = _updatedToDoItem
 
+
+    fun getAllToDos(){
+
+        firestore.getToDos { alltoDos->
+            toDoList.postValue(alltoDos)
+        }
+    }
 
     // Public LiveData that external classes can observe. It exposes _navigateToDetails as immutable LiveData.
     val navigateToDetails: LiveData<ToDoItem?>
