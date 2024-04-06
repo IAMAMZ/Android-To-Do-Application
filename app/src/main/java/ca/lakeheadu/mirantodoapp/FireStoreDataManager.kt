@@ -1,6 +1,7 @@
 package ca.lakeheadu.mirantodoapp
 
 import android.util.Log
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 
@@ -69,6 +70,30 @@ class FireStoreDataManager {
             }
         }.addOnFailureListener { exception ->
             Log.e("FireStoreDataManager", "Error getting document", exception)
+            callback(false)
+        }
+    }
+
+    fun updateToDoItem(toDoId: String, title: String, notes: String, dueDate: Timestamp, callback: (Boolean) -> Unit) {
+        val documentRef = collectionRef.document(toDoId)
+        documentRef.get().addOnSuccessListener { documentSnapshot ->
+            if (documentSnapshot.exists()) {
+                val updatedData = hashMapOf(
+                    "title" to title,
+                    "notes" to notes,
+                    "dueDate" to dueDate
+                )
+                documentRef.update(updatedData as Map<String, Any>)
+                    .addOnSuccessListener {
+                        callback(true)
+                    }
+                    .addOnFailureListener {
+                        callback(false)
+                    }
+            } else {
+                callback(false)
+            }
+        }.addOnFailureListener {
             callback(false)
         }
     }

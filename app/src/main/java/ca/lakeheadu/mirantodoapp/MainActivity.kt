@@ -72,12 +72,20 @@ class MainActivity : AppCompatActivity() {
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchHelper.attachToRecyclerView(binding.FirstRecyclerView)
 
-
+        toDoViewModel.updatedToDoItem.observe(this, Observer { updatedToDoItem ->
+            updatedToDoItem?.let {
+                val updatedDataSet = toDoAdapter.dataSet.map { toDoItem ->
+                    if (toDoItem.id == updatedToDoItem.id) updatedToDoItem else toDoItem
+                }.toTypedArray()
+                toDoAdapter.updateDataSet(updatedDataSet)
+            }
+        })
 
         // call the observe method of the live data of the navigate to data
         toDoViewModel.navigateToDetails.observe(this, Observer { toDoItem ->
             toDoItem?.let {
                 val intent = Intent(this, ToDoDetailsActivity::class.java).apply {
+                    putExtra("id",it.id)
                     putExtra("title", it.title)
                     putExtra("isDone", it.isDone)
                     putExtra("notes",it.notes)
