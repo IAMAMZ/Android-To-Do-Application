@@ -74,29 +74,25 @@ class FireStoreDataManager {
         }
     }
 
-    fun updateToDoItem(toDoId: String, title: String, notes: String, dueDate: Timestamp, callback: (Boolean) -> Unit) {
+    fun updateToDoItem(toDoId: String, title: String, notes: String, dueDate: com.google.firebase.Timestamp?, callback: (Boolean) -> Unit) {
         val documentRef = collectionRef.document(toDoId)
-        documentRef.get().addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
-                val updatedData = hashMapOf(
-                    "title" to title,
-                    "notes" to notes,
-                    "dueDate" to dueDate
-                )
-                documentRef.update(updatedData as Map<String, Any>)
-                    .addOnSuccessListener {
-                        callback(true)
-                    }
-                    .addOnFailureListener {
-                        callback(false)
-                    }
-            } else {
+        val updatedData = hashMapOf<String, Any>(
+            "title" to title,
+            "notes" to notes
+        )
+
+        // Add dueDate to the map only if it's not null
+        dueDate?.let { updatedData["dueDate"] = it }
+
+        documentRef.update(updatedData)
+            .addOnSuccessListener {
+                callback(true)
+            }
+            .addOnFailureListener {
                 callback(false)
             }
-        }.addOnFailureListener {
-            callback(false)
-        }
     }
 
-    }
+
+}
 

@@ -1,6 +1,8 @@
 package ca.lakeheadu.mirantodoapp
+import android.app.Activity
 import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ca.lakeheadu.mirantodoapp.databinding.ActivityToDoDetailsBinding
@@ -18,6 +20,7 @@ class ToDoDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityToDoDetailsBinding
     private var id: String? = null
     private  var isDone:Boolean?=false
+    private var dateSelected:com.google.firebase.Timestamp?=null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +35,15 @@ class ToDoDetailsActivity : AppCompatActivity() {
 
 
 
+        binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
+
+            val selectedDate = Calendar.getInstance()
+            selectedDate.set(year, month, dayOfMonth)
+            val date = selectedDate.time
+            Log.i("ToDoDetailsActivity", "Selected Date: $date")
+            dateSelected = com.google.firebase.Timestamp(date)
+
+        }
         // Populate the views with the data extracted from the intent.
         binding.titleEditText.setText(title)
         binding.statusTextView.setText(if (isDone as Boolean) "Completed" else "Not Completed")
@@ -73,19 +85,35 @@ class ToDoDetailsActivity : AppCompatActivity() {
             // Get the updated values from the UI
             val updatedTitle = binding.titleEditText.text.toString()
             val updatedNotes = binding.notesEditText.text.toString()
-            val updatedDueDate = com.google.firebase.Timestamp(Date(binding.calendarView.date))
+
+            val updatedDueDate = dateSelected;
+
 
             // Update the to-do item in Firestore
             id?.let { toDoId ->
                 val firestore = FireStoreDataManager()
-                firestore.updateToDoItem(toDoId, updatedTitle, updatedNotes, updatedDueDate) { success ->
-                    if (success) {
-                        val updatedToDoItem = ToDoItem(toDoId, updatedTitle, isDone, updatedDueDate, updatedNotes)
-                        ToDoViewModel(application).updateToDoItem(updatedToDoItem);
-                        finish()
-                    } else {
-                        // Update failed, show an error message
-                        Toast.makeText(this, "Failed to update to-do item", Toast.LENGTH_SHORT).show()
+                if (updatedDueDate != null) {
+                    firestore.updateToDoItem(toDoId, updatedTitle, updatedNotes, updatedDueDate) { success ->
+                        if (success) {
+                            //val updatedToDoItem = ToDoItem(toDoId, updatedTitle, isDone, updatedDueDate, updatedNotes)
+                            setResult(Activity.RESULT_OK)
+                            finish()
+                        } else {
+                            // Update failed, show an error message
+                            Toast.makeText(this, "Failed to update to-do item", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                else{
+                    firestore.updateToDoItem(toDoId, updatedTitle, updatedNotes,null) { success ->
+                        if (success) {
+                            //val updatedToDoItem = ToDoItem(toDoId, updatedTitle, isDone, updatedDueDate, updatedNotes)
+                            setResult(Activity.RESULT_OK)
+                            finish()
+                        } else {
+                            // Update failed, show an error message
+                            Toast.makeText(this, "Failed to update to-do item", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }

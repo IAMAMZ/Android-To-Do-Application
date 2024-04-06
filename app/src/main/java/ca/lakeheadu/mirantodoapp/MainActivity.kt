@@ -10,12 +10,14 @@
  */
 
 package ca.lakeheadu.mirantodoapp
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.lakeheadu.mirantodoapp.databinding.ActivityMainBinding
@@ -77,7 +79,6 @@ class MainActivity : AppCompatActivity() {
 
         }
         toDoViewModel.getAllToDos()
-        //loadToDosFromFirestore()
 
 
 
@@ -107,7 +108,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                startActivity(intent)
+                startForResult.launch(intent)
                 toDoViewModel.onToDoDetailsNavigated()
             }
         })
@@ -121,6 +122,14 @@ class MainActivity : AppCompatActivity() {
         addToDoFABBtn.setOnClickListener{ showToDoModal() }
 
 
+    }
+
+
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+
+            toDoViewModel.getAllToDos()
+        }
     }
 
 
@@ -154,13 +163,6 @@ class MainActivity : AppCompatActivity() {
             adapter = toDoAdapter
         }
     }
-    private fun updateRecyclerView(toDoItems: Array<ToDoItem>) {
-        toDoAdapter = ToDoAdapter(toDoItemsList) {
-            toDoViewModel.onToDoClicked(it)
-        }
-        binding.FirstRecyclerView.adapter = toDoAdapter
-    }
-
 
     private fun loadToDosFromFirestore() {
         val firestore = FireStoreDataManager()
@@ -204,7 +206,7 @@ class MainActivity : AppCompatActivity() {
                                 Toast.makeText(this@MainActivity, "Item deleted successfully", Toast.LENGTH_SHORT).show()
                                 // Remove the item from the adapter data
                                 val updatedDataSet = toDoAdapter.dataSet.filterNot { it.id == toDoId }.toTypedArray()
-                                //toDoAdapter.updateDataSet(updatedDataSet)
+                                loadToDosFromFirestore()
                             } else {
                                 Toast.makeText(this@MainActivity, "Failed to delete item", Toast.LENGTH_SHORT).show()
                             }
