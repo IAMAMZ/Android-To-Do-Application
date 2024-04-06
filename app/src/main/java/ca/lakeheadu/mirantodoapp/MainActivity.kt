@@ -22,6 +22,8 @@ import ca.lakeheadu.mirantodoapp.databinding.ActivityMainBinding
 import java.time.LocalDate
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import ca.lakeheadu.mirantodoapp.databinding.AddNewTodoItemBinding
 import com.google.firebase.FirebaseApp
 import java.time.ZoneId
@@ -37,7 +39,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var addNewToDoBinding :AddNewTodoItemBinding;
 
     private lateinit var toDoAdapter: ToDoAdapter
-
 
     // get the view model as a instance member
     private val toDoViewModel: ToDoViewModel by viewModels()
@@ -59,22 +60,17 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this);
 
-        val firestore = FireStoreDataManager();
-        firestore.getToDos {
-            todos->
 
-                for(todo in todos){
-                    println(todo.title);
-
-
-        }
-        }
         // Initialize the RecyclerView and its adapter here
         initializeRecyclerView()
 
         // Load to-do items from Firestore
         loadToDosFromFirestore()
 
+
+
+        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+        itemTouchHelper.attachToRecyclerView(binding.FirstRecyclerView)
 
 
 
@@ -105,10 +101,9 @@ class MainActivity : AppCompatActivity() {
         addToDoFABBtn.setOnClickListener{ showToDoModal() }
 
 
-
-
-
     }
+
+
     private fun showToDoModal() {
         val dialogTitle = getString(R.string.add_dialog_title)
         val positiveButtonTitle = getString(R.string.add_todo)
@@ -150,8 +145,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadToDosFromFirestore() {
         val firestore = FireStoreDataManager()
         firestore.getToDos { todos ->
-
-            updateRecyclerView(todos.toTypedArray())
+            toDoAdapter.updateDataSet(todos.toTypedArray())
         }
     }
     private fun saveToDoItem(toDoItem: ToDoItem) {
@@ -164,6 +158,49 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Failed to add To-Do", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+
+    private val swipeToDeleteCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            // Move operations are not supported
+            return false
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val position = viewHolder.adapterPosition
+            val toDoItem = toDoAdapter.getItemById(position)
+
+            // Create and display an AlertDialog for confirmation
+            AlertDialog.Builder(this@MainActivity).apply {
+                setTitle("Delete ToDo")
+                setMessage("Are you sure you want to delete this to-do item?")
+                setPositiveButton("Yes") { dialog, which ->
+                    // delte  if user confirms
+                    toDoItem?.id?.let { toDoId ->
+                        FireStoreDataManager().deleteToDo(toDoId) { success ->
+                            if (success) {
+                                Toast.makeText(this@MainActivity, "Item deleted successfully", Toast.LENGTH_SHORT).show()
+                                // Remove the item from the adapter data
+                                val updatedDataSet = toDoAdapter.dataSet.filterNot { it.id == toDoId }.toTypedArray()
+                                toDoAdapter.updateDataSet(updatedDataSet)
+                            } else {
+                                Toast.makeText(this@MainActivity, "Failed to delete item", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+                setNegativeButton("No") { dialog, which ->
+                    //dimiss the dialog if user says no
+                    toDoAdapter.notifyItemChanged(position)
+                    dialog.dismiss()
+                }
+                setCancelable(false)
+                show()
+            }
+        }
+
     }
 
 

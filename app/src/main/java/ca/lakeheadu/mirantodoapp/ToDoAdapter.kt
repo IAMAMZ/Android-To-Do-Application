@@ -26,7 +26,7 @@ import com.google.firebase.Timestamp
  *  * @param dataSet Array of to-do items to be displayed.
  *  * @param onItemClicked Function to be called when a to-do item is clicked.
  */
-class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicked: (ToDoItem) -> Unit) :
+class ToDoAdapter(var dataSet: Array<ToDoItem>, private val onItemClicked: (ToDoItem) -> Unit) :
     RecyclerView.Adapter<ToDoAdapter.ViewHolder>()
 {
 
@@ -51,7 +51,7 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicke
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val item = dataSet[position];
+        var item = dataSet[position];
         viewHolder.itemView.setOnClickListener {
             onItemClicked(item);
         };
@@ -100,6 +100,15 @@ class ToDoAdapter(private val dataSet: Array<ToDoItem>, private val onItemClicke
             textView.paintFlags = textView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv();
         }
     }
+
+    fun updateDataSet(newDataSet: Array<ToDoItem>) {
+        this.dataSet = newDataSet
+        notifyDataSetChanged() // Notify any registered observers that the data set has changed.
+    }
+    fun getItemById(position: Int): ToDoItem? {
+        return if (position >= 0 && position < dataSet.size) dataSet[position] else null
+    }
+
 
 
     override fun getItemCount() = dataSet.size
