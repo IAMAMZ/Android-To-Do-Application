@@ -79,7 +79,18 @@ class ToDoDetailsActivity : AppCompatActivity() {
 
         binding.btnDelete.setOnClickListener {
             // Implement delete logic here. Currently, just closes the activity.
-            finish()
+            id?.let { toDoId ->
+                val firestore = FireStoreDataManager()
+                    firestore.deleteToDo(id!!) { success ->
+                        if (success) {
+                            setResult(Activity.RESULT_OK)
+                            finish()
+                        } else {
+                            // Update failed, show an error message
+                            Toast.makeText(this, "Failed to delete to-do item", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
         }
         binding.btnSave.setOnClickListener {
             // Get the updated values from the UI
