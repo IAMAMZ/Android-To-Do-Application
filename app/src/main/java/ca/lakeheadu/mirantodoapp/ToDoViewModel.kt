@@ -16,7 +16,7 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
 
     // A private mutable LiveData that holds the details of the to-do item to navigate to.
     private val toDoList = MutableLiveData<List<ToDoItem>>()
-    val toDos :LiveData<List<ToDoItem>> = toDoList
+    val toDos: LiveData<List<ToDoItem>> = toDoList
 
     val firestore = FireStoreDataManager()
 
@@ -26,9 +26,9 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
         get() = _updatedToDoItem
 
 
-    fun getAllToDos(){
+    fun getAllToDos() {
 
-        firestore.getToDos { alltoDos->
+        firestore.getToDos { alltoDos ->
             toDoList.postValue(alltoDos)
         }
     }
@@ -54,6 +54,7 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
     fun onToDoDetailsNavigated() {
         _navigateToDetails.value = null
     }
+
     fun updateToDoItem(toDoItem: ToDoItem) {
         _updatedToDoItem.value = toDoItem
     }

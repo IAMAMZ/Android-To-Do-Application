@@ -1,4 +1,5 @@
 package ca.lakeheadu.mirantodoapp
+
 import android.app.Activity
 import android.graphics.Paint
 import android.os.Bundle
@@ -19,8 +20,8 @@ import java.util.Date
 class ToDoDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityToDoDetailsBinding
     private var id: String? = null
-    private  var isDone:Boolean?=false
-    private var dateSelected:com.google.firebase.Timestamp?=null;
+    private var isDone: Boolean? = false
+    private var dateSelected: com.google.firebase.Timestamp? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +31,7 @@ class ToDoDetailsActivity : AppCompatActivity() {
         // Extract data from the intent that started this activity
         id = intent.getStringExtra("id")
         val title = intent.getStringExtra("title")
-         isDone = intent.getBooleanExtra("isDone", false)
+        isDone = intent.getBooleanExtra("isDone", false)
         val dueDateMillis = intent.getLongExtra("dueDateMillis", -1L)
 
 
@@ -55,11 +56,10 @@ class ToDoDetailsActivity : AppCompatActivity() {
             // can't set up a to do for the past
 
             // only if the due date in the future if it's in the past then you can reset to past
-                if(dueDateMillis>today){
-                    binding.calendarView.minDate = today
-                }
+            if (dueDateMillis > today) {
+                binding.calendarView.minDate = today
             }
-        else{
+        } else {
             // if due date not set still limit
             binding.calendarView.minDate = today
         }
@@ -81,16 +81,17 @@ class ToDoDetailsActivity : AppCompatActivity() {
             // Implement delete logic here. Currently, just closes the activity.
             id?.let { toDoId ->
                 val firestore = FireStoreDataManager()
-                    firestore.deleteToDo(id!!) { success ->
-                        if (success) {
-                            setResult(Activity.RESULT_OK)
-                            finish()
-                        } else {
-                            // Update failed, show an error message
-                            Toast.makeText(this, "Failed to delete to-do item", Toast.LENGTH_SHORT).show()
-                        }
+                firestore.deleteToDo(id!!) { success ->
+                    if (success) {
+                        setResult(Activity.RESULT_OK)
+                        finish()
+                    } else {
+                        // Update failed, show an error message
+                        Toast.makeText(this, "Failed to delete to-do item", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
+            }
         }
         binding.btnSave.setOnClickListener {
             // Get the updated values from the UI
@@ -104,26 +105,32 @@ class ToDoDetailsActivity : AppCompatActivity() {
             id?.let { toDoId ->
                 val firestore = FireStoreDataManager()
                 if (updatedDueDate != null) {
-                    firestore.updateToDoItem(toDoId, updatedTitle, updatedNotes, updatedDueDate) { success ->
+                    firestore.updateToDoItem(
+                        toDoId,
+                        updatedTitle,
+                        updatedNotes,
+                        updatedDueDate
+                    ) { success ->
                         if (success) {
                             //val updatedToDoItem = ToDoItem(toDoId, updatedTitle, isDone, updatedDueDate, updatedNotes)
                             setResult(Activity.RESULT_OK)
                             finish()
                         } else {
                             // Update failed, show an error message
-                            Toast.makeText(this, "Failed to update to-do item", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Failed to update to-do item", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
-                }
-                else{
-                    firestore.updateToDoItem(toDoId, updatedTitle, updatedNotes,null) { success ->
+                } else {
+                    firestore.updateToDoItem(toDoId, updatedTitle, updatedNotes, null) { success ->
                         if (success) {
                             //val updatedToDoItem = ToDoItem(toDoId, updatedTitle, isDone, updatedDueDate, updatedNotes)
                             setResult(Activity.RESULT_OK)
                             finish()
                         } else {
                             // Update failed, show an error message
-                            Toast.makeText(this, "Failed to update to-do item", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Failed to update to-do item", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 }

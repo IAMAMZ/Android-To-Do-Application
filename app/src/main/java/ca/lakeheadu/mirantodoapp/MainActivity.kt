@@ -2,14 +2,15 @@
  * Student Name: Miran Qarachatani
  * Student Number: 1197590
  *
- * Description: To do list application UI as part of COMP 3025-G Assignment 3.
- * User navigate between 2 screens a to do list and to do item and can set to due date and add notes to
- * a to do item
+ * Description: To do list application UI as part of COMP 3025-G Assignment 4
+ * This part I extended the UI of to do application  done in assignment 3 and
+ * added persistent data and full functionality
  *
 
  */
 
 package ca.lakeheadu.mirantodoapp
+
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -38,13 +39,15 @@ class MainActivity : AppCompatActivity() {
     // Declare an instance of the binding class
     private lateinit var binding: ActivityMainBinding;
 
-    private lateinit var addNewToDoBinding :AddNewTodoItemBinding;
+    private lateinit var addNewToDoBinding: AddNewTodoItemBinding;
 
     private lateinit var toDoAdapter: ToDoAdapter
 
     // get the view model as a instance member
     private val toDoViewModel: ToDoViewModel by viewModels()
-    private lateinit var toDoItemsList :MutableList<ToDoItem>
+
+    // list of the to do items in our main activity
+    private lateinit var toDoItemsList: MutableList<ToDoItem>
 
 
     /**
@@ -56,6 +59,7 @@ class MainActivity : AppCompatActivity() {
      */
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         // Inflate the layout
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -63,74 +67,50 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this);
 
+        // initialize the recycle view
+        initializeRecyclerView()
 
-
-
-        // Load to-do items from Firestore
-        toDoViewModel.toDos.observe(this){ toDoItems->
-            toDoItemsList = toDoItems.toMutableList()
-            toDoAdapter = ToDoAdapter(toDoItems){ toDoViewModel.onToDoClicked(it)}
-
-            binding.FirstRecyclerView.apply {
-                layoutManager = LinearLayoutManager(this@MainActivity)
-                adapter = toDoAdapter
-            }
-
-
-        }
+        // get the to dos from the view model
         toDoViewModel.getAllToDos()
 
-
-
+        // set up swipe and add the swipe to delete call back to it
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
-        itemTouchHelper.attachToRecyclerView(binding.FirstRecyclerView)
 
-        toDoViewModel.updatedToDoItem.observe(this, Observer { updatedToDoItem ->
-            updatedToDoItem?.let {
-                val updatedDataSet = toDoAdapter.dataSet.map { toDoItem ->
-                    if (toDoItem.id == updatedToDoItem.id) updatedToDoItem else toDoItem
-                }.toTypedArray()
-                //toDoAdapter.updateDataSet(updatedDataSet)
-            }
-        })
+        // attach the swipe helper to the recycle view
+        itemTouchHelper.attachToRecyclerView(binding.FirstRecyclerView)
 
         // call the observe method of the live data of the navigate to data
         toDoViewModel.navigateToDetails.observe(this, Observer { toDoItem ->
             toDoItem?.let {
+                // pass the data through intent
                 val intent = Intent(this, ToDoDetailsActivity::class.java).apply {
-                    putExtra("id",it.id)
+                    putExtra("id", it.id)
                     putExtra("title", it.title)
                     putExtra("isDone", it.isDone)
-                    putExtra("notes",it.notes)
-                    it.dueDate?.let { timestamp  ->
-
+                    putExtra("notes", it.notes)
+                    it.dueDate?.let { timestamp ->
                         putExtra("dueDateMillis", timestamp.toDate().time)
                     }
                 }
-
+                // start the to do details activity
                 startForResult.launch(intent)
+                // if item saved or deleted notify the view model
                 toDoViewModel.onToDoDetailsNavigated()
             }
         })
 
-
-
-
-
+        // Set up the click listener for the add to-do FAB button
         val addToDoFABBtn = binding.addToDoFAB;
-
-        addToDoFABBtn.setOnClickListener{ showToDoModal() }
-
-
+        addToDoFABBtn.setOnClickListener { showToDoModal() }
     }
 
-
-    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-
-            toDoViewModel.getAllToDos()
+    // Callback for TodoDetails activity to refresh the to do items in case of update
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                toDoViewModel.getAllToDos()
+            }
         }
-    }
 
 
     private fun showToDoModal() {
@@ -153,29 +133,26 @@ class MainActivity : AppCompatActivity() {
         builder.create().show()
     }
 
+    // observe changes in toDoItems live data, and instantiate the adapter and add it to recycle view
     private fun initializeRecyclerView() {
-        toDoAdapter = ToDoAdapter(toDoItemsList) {
-            toDoViewModel.onToDoClicked(it)
-        }
+        toDoViewModel.toDos.observe(this) { toDoItems ->
+            toDoItemsList = toDoItems.toMutableList()
+            toDoAdapter = ToDoAdapter(toDoItems) { toDoViewModel.onToDoClicked(it) }
 
-        binding.FirstRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = toDoAdapter
+            binding.FirstRecyclerView.apply {
+                layoutManager = LinearLayoutManager(this@MainActivity)
+                adapter = toDoAdapter
+            }
         }
     }
 
-    private fun loadToDosFromFirestore() {
-        val firestore = FireStoreDataManager()
-        firestore.getToDos { todos ->
-            toDoAdapter.updateDataSet(todos)
-        }
-    }
+
     private fun saveToDoItem(toDoItem: ToDoItem) {
         val firestore = FireStoreDataManager()
         firestore.saveToDo(toDoItem) { success ->
             if (success) {
                 Toast.makeText(this, "To-Do added successfully", Toast.LENGTH_SHORT).show()
-                loadToDosFromFirestore() // Reload the to-do list from Firestore to show the new item
+                toDoViewModel.getAllToDos()
             } else {
                 Toast.makeText(this, "Failed to add To-Do", Toast.LENGTH_SHORT).show()
             }
@@ -183,48 +160,59 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private val swipeToDeleteCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-            // Move operations are not supported
-            return false
-        }
+    private val swipeToDeleteCallback =
+        object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                // Move operations are not supported
+                return false
+            }
 
-        @RequiresApi(Build.VERSION_CODES.O)
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            val position = viewHolder.adapterPosition
-            val toDoItem = toDoAdapter.getItemById(position)
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val toDoItem = toDoAdapter.getItemById(position)
 
-            // Create and display an AlertDialog for confirmation
-            AlertDialog.Builder(this@MainActivity).apply {
-                setTitle("Delete ToDo")
-                setMessage("Are you sure you want to delete this to-do item?")
-                setPositiveButton("Yes") { dialog, which ->
-                    // delte  if user confirms
-                    toDoItem?.id?.let { toDoId ->
-                        FireStoreDataManager().deleteToDo(toDoId) { success ->
-                            if (success) {
-                                Toast.makeText(this@MainActivity, "Item deleted successfully", Toast.LENGTH_SHORT).show()
-                                // Remove the item from the adapter data
-                                val updatedDataSet = toDoAdapter.dataSet.filterNot { it.id == toDoId }.toTypedArray()
-                                loadToDosFromFirestore()
-                            } else {
-                                Toast.makeText(this@MainActivity, "Failed to delete item", Toast.LENGTH_SHORT).show()
+                // Create and display an AlertDialog for confirmation
+                AlertDialog.Builder(this@MainActivity).apply {
+                    setTitle("Delete ToDo")
+                    setMessage("Are you sure you want to delete this to-do item?")
+                    setPositiveButton("Yes") { dialog, which ->
+                        // delte  if user confirms
+                        toDoItem?.id?.let { toDoId ->
+                            FireStoreDataManager().deleteToDo(toDoId) { success ->
+                                if (success) {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "Item deleted successfully",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    // refresh the to do items
+                                    toDoViewModel.getAllToDos()
+                                } else {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "Failed to delete item",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                         }
                     }
+                    setNegativeButton("No") { dialog, which ->
+                        //dismiss the dialog if user says no
+                        toDoAdapter.notifyItemChanged(position)
+                        dialog.dismiss()
+                    }
+                    setCancelable(false)
+                    show()
                 }
-                setNegativeButton("No") { dialog, which ->
-                    //dimiss the dialog if user says no
-                    toDoAdapter.notifyItemChanged(position)
-                    dialog.dismiss()
-                }
-                setCancelable(false)
-                show()
             }
+
         }
-
-    }
-
 
 
 }

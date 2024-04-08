@@ -1,4 +1,5 @@
 package ca.lakeheadu.mirantodoapp
+
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Build
@@ -18,7 +19,6 @@ import java.time.temporal.ChronoUnit
 import com.google.firebase.Timestamp
 
 
-
 /**
  * This class converts a to do item data class to a recyclerview of view holder items.
 
@@ -28,15 +28,14 @@ import com.google.firebase.Timestamp
  *  * @param onItemClicked Function to be called when a to-do item is clicked.
  */
 class ToDoAdapter(var dataSet: List<ToDoItem>, private val onItemClicked: (ToDoItem) -> Unit) :
-    RecyclerView.Adapter<ToDoAdapter.ViewHolder>()
-{
+    RecyclerView.Adapter<ToDoAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ToDoRowBinding) : RecyclerView.ViewHolder(binding.root)
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder
-    {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
 
-        val binding = ToDoRowBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+        val binding =
+            ToDoRowBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
         return ViewHolder(binding)
     }
 
@@ -72,7 +71,11 @@ class ToDoAdapter(var dataSet: List<ToDoItem>, private val onItemClicked: (ToDoI
                 val firestore = FireStoreDataManager()
                 firestore.updateToDoIsDone(toDoId, isChecked) { success ->
                     if (!success) {
-                        Toast.makeText(viewHolder.itemView.context, "Opps something went wrong", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            viewHolder.itemView.context,
+                            "Opps something went wrong",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -83,7 +86,8 @@ class ToDoAdapter(var dataSet: List<ToDoItem>, private val onItemClicked: (ToDoI
             // Convert Firebase Timestamp to java.util.Date, then to java.time.Instant
             val instant = timestamp.toDate().toInstant()
             val dueDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
-            viewHolder.binding.todoDueDate.text = dueDate.format(DateTimeFormatter.ofPattern("E MMM dd"))
+            viewHolder.binding.todoDueDate.text =
+                dueDate.format(DateTimeFormatter.ofPattern("E MMM dd"))
             val daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), dueDate)
             viewHolder.binding.todoDueDate.setTextColor(
                 when {
@@ -116,10 +120,10 @@ class ToDoAdapter(var dataSet: List<ToDoItem>, private val onItemClicked: (ToDoI
         this.dataSet = newDataSet
         notifyDataSetChanged() // Notify any registered observers that the data set has changed.
     }
+
     fun getItemById(position: Int): ToDoItem? {
         return if (position >= 0 && position < dataSet.size) dataSet[position] else null
     }
-
 
 
     override fun getItemCount() = dataSet.size
